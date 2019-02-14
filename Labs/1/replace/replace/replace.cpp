@@ -5,70 +5,39 @@
 
 using namespace std;
 
-void CopyFile(ifstream &fIn, ofstream &fOut)
+string ReplaceStr(const string& str, const string& searchStr, const string& replaceStr)
 {
-	string str;
-	while (!fIn.eof())
+	int index = 0;
+	string result;
+	while (index < str.length())
 	{
-		getline(fIn, str);
-		fOut << str;
-		if (!fIn.eof())
+		int foundIndex = str.find(searchStr, index);
+		if (foundIndex != -1 && searchStr.length() > 0)
 		{
-			fOut << endl;
-		}
-	}
-}
-
-void FillStr(ifstream &fIn, string &str, int lenOfstr)
-{
-	char ch;
-	str = "";
-	for (int i = 0; i < lenOfstr; i++)
-	{
-		fIn.get(ch);
-		if (!fIn.eof())
-		{
-			str = str + ch;
+			result.append(str, index, foundIndex - index);
+			result.append(replaceStr);
+			index = foundIndex + searchStr.length();
 		}
 		else
 		{
+			result.append(str, index);
 			break;
 		}
 	}
+	return result;
 }
 
-void MoveWindow(ifstream &fIn, ofstream &fOut, string &str)
-{
-	char ch;
-	fIn.get(ch);
-	if (!fIn.eof())
-	{
-		fOut << str[0];
-		for (int i = 0; i < str.length() - 1; i++)
-		{
-			str[i] = str[i + 1];
-		}
-		str[str.length() - 1] = ch;
-	}
-}
-
-void CopyWithReplace(ifstream &fIn, ofstream &fOut, string searchStr, string replaceStr)
+void CopyWithReplace(istream &fIn, ostream &fOut, const string &searchStr, const string &replaceStr)
 {
 	string str;
-	FillStr(fIn, str, searchStr.length());
-	while (!fIn.eof())
+	while (getline(fIn, str))
 	{
-		if (str == searchStr)
+		fOut << ReplaceStr(str, searchStr, replaceStr);
+		if (!fIn.eof())
 		{
-			fOut << replaceStr;
-			FillStr(fIn, str, searchStr.length());
-		}
-		else
-		{
-			MoveWindow(fIn, fOut, str);
+			fOut << '\n';
 		}
 	}
-	fOut << str;
 }
 
 int main(int argc, char *argv[])
@@ -99,14 +68,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	if (searchStr == "")
-	{
-		CopyFile(fIn, fOut);
-	}
-	else
-	{
-		CopyWithReplace(fIn, fOut, searchStr, replaceStr);
-	}
+	CopyWithReplace(fIn, fOut, searchStr, replaceStr);
 
 	return 0;
 }
