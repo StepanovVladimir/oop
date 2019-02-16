@@ -10,7 +10,10 @@ fc %OUT% noArguments-out.txt || goto err
 %PROGRAM% "" > %OUT%
 fc %OUT% notByte-out.txt || goto err
 
-%PROGRAM% 1b3 > %OUT%
+%PROGRAM% ab3 > %OUT%
+fc %OUT% notByte-out.txt || goto err
+
+%PROGRAM% 5555555555 > %OUT%
 fc %OUT% notByte-out.txt || goto err
 
 %PROGRAM% 300 > %OUT%

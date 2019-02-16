@@ -4,28 +4,17 @@
 
 using namespace std;
 
-bool StringIsNumber(string str)
+uint8_t GetReverseByte(uint8_t byte)
 {
-	for (int i = 0; i < str.length(); i++)
-	{
-		if (str[i] < '0' || str[i] > '9')
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-unsigned char GetReverseByte(unsigned char byte)
-{
-	const char BITS_OF_BYTE[] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 	const int NUMBER_OF_BITS = 8;
-	unsigned char reverseByte = 0;
+	const uint8_t BIT_MASK_1 = 0x01;
+	const uint8_t BIT_MASK_2 = 0x80;
+	uint8_t reverseByte = 0;
 	for (int i = 0; i < NUMBER_OF_BITS; i++)
 	{
-		if ((byte & BITS_OF_BYTE[i]) != 0)
+		if ((byte & (BIT_MASK_1 << i)) != 0)
 		{
-			reverseByte = reverseByte | BITS_OF_BYTE[NUMBER_OF_BITS - 1 - i];
+			reverseByte = reverseByte | (BIT_MASK_2 >> i);
 		}
 	}
 	return reverseByte;
@@ -41,14 +30,22 @@ int main(int argc, char *argv[])
 
 	string str;
 	str = argv[1];
+	int number;
 
-	if (str == "" || str.length() > 3 || !StringIsNumber(str))
+	try
+	{
+		number = stoi(str);
+	}
+	catch (const invalid_argument &err)
 	{
 		cout << "You entered not byte\n";
 		return 1;
 	}
-
-	int number = stoi(str);
+	catch (const out_of_range &err)
+	{
+		cout << "You entered not byte\n";
+		return 1;
+	}
 
 	if (number > 255)
 	{
