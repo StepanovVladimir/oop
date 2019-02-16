@@ -5,26 +5,27 @@
 
 using namespace std;
 
-string ReplaceStr(const string& str, const string& searchStr, const string& replaceStr)
+string GetChangedStr(const string& str, const string& searchStr, const string& replaceStr)
 {
+	string changedStr;
 	int index = 0;
-	string result;
+	int foundIndex;
 	while (index < str.length())
 	{
-		int foundIndex = str.find(searchStr, index);
+		foundIndex = str.find(searchStr, index);
 		if (foundIndex != -1 && searchStr.length() > 0)
 		{
-			result.append(str, index, foundIndex - index);
-			result.append(replaceStr);
+			changedStr.append(str, index, foundIndex - index);
+			changedStr.append(replaceStr);
 			index = foundIndex + searchStr.length();
 		}
 		else
 		{
-			result.append(str, index);
+			changedStr.append(str, index);
 			break;
 		}
 	}
-	return result;
+	return changedStr;
 }
 
 void CopyWithReplace(istream &fIn, ostream &fOut, const string &searchStr, const string &replaceStr)
@@ -32,10 +33,10 @@ void CopyWithReplace(istream &fIn, ostream &fOut, const string &searchStr, const
 	string str;
 	while (getline(fIn, str))
 	{
-		fOut << ReplaceStr(str, searchStr, replaceStr);
+		fOut << GetChangedStr(str, searchStr, replaceStr);
 		if (!fIn.eof())
 		{
-			fOut << '\n';
+			fOut << endl;
 		}
 	}
 }
