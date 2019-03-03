@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <array>
 #include <sstream>
 #include <iomanip>
 
@@ -10,7 +11,10 @@ using namespace std;
 const int MATRIX_SIZE = 3;
 const int SUBMATRIX_SIZE = MATRIX_SIZE - 1;
 
-bool FillMatrix(istream &fIn, float matrix[MATRIX_SIZE][MATRIX_SIZE])
+using Matrix = array<array<float, MATRIX_SIZE>, MATRIX_SIZE>;
+using Submatrix = array<array<float, SUBMATRIX_SIZE>, SUBMATRIX_SIZE>;
+
+bool FillMatrix(istream &fIn, Matrix &matrix)
 {
 	string str;
 	float f;
@@ -35,9 +39,9 @@ bool FillMatrix(istream &fIn, float matrix[MATRIX_SIZE][MATRIX_SIZE])
 	return true;
 }
 
-void CreateSubmatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float submatrix[SUBMATRIX_SIZE][SUBMATRIX_SIZE],
-	int matrixIndex1, int matrixIndex2)
+Submatrix CreateSubmatrix(const Matrix &matrix, int matrixIndex1, int matrixIndex2)
 {
+	Submatrix submatrix;
 	int submatrixIndex1 = 0;
 	int submatrixIndex2 = 0;
 	for (int i = 0; i < MATRIX_SIZE; i++)
@@ -56,20 +60,21 @@ void CreateSubmatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float submatrix[SUB
 			submatrixIndex2 = 0;
 		}
 	}
+	return submatrix;
 }
 
-float GetDetOfSubmatrix(float matrix[SUBMATRIX_SIZE][SUBMATRIX_SIZE])
+float GetDetOfSubmatrix(const Submatrix &submatrix)
 {
-	return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+	return submatrix[0][0] * submatrix[1][1] - submatrix[0][1] * submatrix[1][0];
 }
 
-float GetDetOfMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE])
+float GetDetOfMatrix(const Matrix &matrix)
 {
 	float det = 0.f;
-	float submatrix[SUBMATRIX_SIZE][SUBMATRIX_SIZE];
+	Submatrix submatrix;
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
-		CreateSubmatrix(matrix, submatrix, 0, i);
+		submatrix = CreateSubmatrix(matrix, 0, i);
 		if (i % 2 == 0)
 		{
 			det += matrix[0][i] * GetDetOfSubmatrix(submatrix);
@@ -82,25 +87,26 @@ float GetDetOfMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE])
 	return det;
 }
 
-void TransposeMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float transposedMatrix[MATRIX_SIZE][MATRIX_SIZE])
+void TransposeMatrix(Matrix &matrix)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
-		for (int j = 0; j < MATRIX_SIZE; j++)
+		for (int j = i + 1; j < MATRIX_SIZE; j++)
 		{
-			transposedMatrix[i][j] = matrix[j][i];
+			swap(matrix[i][j], matrix[j][i]);
 		}
 	}
 }
 
-void CreateCofactorMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float cofactorMatrix[MATRIX_SIZE][MATRIX_SIZE])
+Matrix CreateCofactorMatrix(const Matrix &matrix)
 {
-	float submatrix[SUBMATRIX_SIZE][SUBMATRIX_SIZE];
+	Matrix cofactorMatrix;
+	Submatrix submatrix;
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
 		for (int j = 0; j < MATRIX_SIZE; j++)
 		{
-			CreateSubmatrix(matrix, submatrix, i, j);
+			submatrix = CreateSubmatrix(matrix, i, j);
 			if ((i + j) % 2 == 0)
 			{
 				cofactorMatrix[i][j] = GetDetOfSubmatrix(submatrix);
@@ -109,11 +115,12 @@ void CreateCofactorMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float cofactor
 			{
 				cofactorMatrix[i][j] = -GetDetOfSubmatrix(submatrix);
 			}
-		}	
+		}
 	}
+	return cofactorMatrix;
 }
 
-void DivMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float divider)
+void DivMatrix(Matrix &matrix, float divider)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -124,16 +131,14 @@ void DivMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float divider)
 	}
 }
 
-void CalculateInverseMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE], float inverseMatrix[MATRIX_SIZE][MATRIX_SIZE],
-	float det)
+void CalculateInverseMatrix(Matrix &matrix, float det)
 {
-	float transposedMatrix[MATRIX_SIZE][MATRIX_SIZE];
-	TransposeMatrix(matrix, transposedMatrix);
-    CreateCofactorMatrix(transposedMatrix, inverseMatrix);
-	DivMatrix(inverseMatrix, det);
+	TransposeMatrix(matrix);
+	matrix = CreateCofactorMatrix(matrix);
+	DivMatrix(matrix, det);
 }
 
-void PrintMatrix(float matrix[MATRIX_SIZE][MATRIX_SIZE])
+void PrintMatrix(const Matrix &matrix)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -164,7 +169,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	float matrix[MATRIX_SIZE][MATRIX_SIZE];
+	Matrix matrix;
 
 	if (!FillMatrix(fIn, matrix))
 	{
@@ -180,9 +185,8 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		float inverseMatrix[MATRIX_SIZE][MATRIX_SIZE];
-		CalculateInverseMatrix(matrix, inverseMatrix, det);
-		PrintMatrix(inverseMatrix);
+		CalculateInverseMatrix(matrix, det);
+		PrintMatrix(matrix);
 	}
 
 	return 0;

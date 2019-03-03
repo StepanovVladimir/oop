@@ -13,7 +13,7 @@ uint8_t GetReverseByte(uint8_t byte)
 	{
 		if ((byte & (BIT_MASK << i)) != 0)
 		{
-			reverseByte = reverseByte | (BIT_MASK << NUMBER_OF_BITS - 1 - i);
+			reverseByte |= (BIT_MASK << NUMBER_OF_BITS - 1 - i);
 		}
 	}
 	return reverseByte;
