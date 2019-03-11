@@ -29,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="noArguments-out.txt" />
-    <Text Include="failedFile-out.txt" />
     <Text Include="zeroDeterminant.txt" />
     <Text Include="zeroDeterminant-out.txt" />
     <Text Include="notEnoughNumbers.txt" />

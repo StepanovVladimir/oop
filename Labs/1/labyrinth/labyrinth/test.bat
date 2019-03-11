@@ -8,7 +8,7 @@ set OUT="%TEMP%\out.txt"
 fc %OUT% noArguments-out.txt || goto err
 
 %PROGRAM% lalala output.txt > %OUT%
-fc %OUT% failedFile-out.txt || goto err
+fc %OUT% inputError-out.txt || goto err
 
 %PROGRAM% notFullInput.txt output.txt > %OUT%
 fc %OUT% inputError-out.txt || goto err
@@ -33,4 +33,4 @@ exit /B 0
 
 :err
 echo Program testing failed
-exit /B 1
+exit /B 0

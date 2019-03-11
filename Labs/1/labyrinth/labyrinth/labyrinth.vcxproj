@@ -175,7 +175,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="failedFile-out.txt" />
     <Text Include="input1.txt" />
     <Text Include="input2.txt" />
     <Text Include="input3.txt" />

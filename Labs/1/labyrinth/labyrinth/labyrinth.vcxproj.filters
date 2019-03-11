@@ -36,7 +36,6 @@
     <Text Include="output2.txt" />
     <Text Include="output3.txt" />
     <Text Include="noArguments-out.txt" />
-    <Text Include="failedFile-out.txt" />
     <Text Include="notFullInput.txt" />
     <Text Include="inputError-out.txt" />
     <Text Include="noCoordinates.txt" />

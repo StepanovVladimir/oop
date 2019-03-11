@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include <string>
+#include <array>
 
 using namespace std;
 
@@ -21,7 +22,9 @@ struct Cell
 	short shortestWay = -1;
 };
 
-void CreateFrame(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2])
+using Matrix = array<array<Cell, FIELD_SIZE + 2>, FIELD_SIZE + 2>;
+
+void CreateFrame(Matrix &matrix)
 {
 	for (int8_t i = 0; i < FIELD_SIZE + 2; i++)
 	{
@@ -32,50 +35,49 @@ void CreateFrame(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2])
 	}
 }
 
-bool FillMatrix(istream &fIn, Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2],
-	Coordinate &beginCoordinate, Coordinate &endCoordinate)
+bool FillMatrix(const string &inFileName, Matrix &matrix, Coordinate &beginCoordinate, Coordinate &endCoordinate)
 {
+	ifstream fIn;
+	fIn.open(inFileName);
+	if (!fIn.is_open())
+	{
+		return false;
+	}
+
+	char ch;
 	string str;
 	for (int8_t i = 1; i <= FIELD_SIZE; i++)
 	{
 		for (int8_t j = 1; j <= FIELD_SIZE; j++)
 		{
-			if (fIn.get(matrix[i][j].ch))
-			{
-				if (matrix[i][j].ch == 'A')
-				{
-					if (beginCoordinate.x == -1)
-					{
-						matrix[i][j].shortestWay = 0;
-						beginCoordinate.x = i;
-						beginCoordinate.y = j;
-					}
-					else
-					{
-						return false;
-					}
-				}
-				else if (matrix[i][j].ch == 'B')
-				{
-					if (endCoordinate.x == -1)
-					{
-						endCoordinate.x = i;
-						endCoordinate.y = j;
-					}
-					else
-					{
-						return false;
-					}
-				}
-				else if (matrix[i][j].ch != ' ' && matrix[i][j].ch != '#')
-				{
-					return false;
-				}
-			}
-			else
+			if (!fIn.get(ch))
 			{
 				return false;
 			}
+			if (ch == 'A')
+			{
+				if (beginCoordinate.x != -1)
+				{
+					return false;
+				}
+				matrix[i][j].shortestWay = 0;
+				beginCoordinate.x = i;
+				beginCoordinate.y = j;
+			}
+			else if (ch == 'B')
+			{
+				if (endCoordinate.x != -1)
+				{
+					return false;
+				}
+				endCoordinate.x = i;
+				endCoordinate.y = j;
+			}
+			else if (ch != ' ' && ch != '#')
+			{
+				return false;
+			}
+			matrix[i][j].ch = ch;
 		}
 		getline(fIn, str);
 	}
@@ -83,11 +85,11 @@ bool FillMatrix(istream &fIn, Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2],
 	{
 		return false;
 	}
+	CreateFrame(matrix);
 	return true;
 }
 
-void PassInNeighboringCell(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], queue<Coordinate> &queueOfCoordinates,
-	int8_t x, int8_t y, short shortesWay)
+void PassInCell(Matrix &matrix, queue<Coordinate> &queueOfCoordinates, short shortesWay, int8_t x, int8_t y)
 {
 	if (matrix[x][y].ch != '#' && matrix[x][y].shortestWay == -1)
 	{
@@ -96,25 +98,25 @@ void PassInNeighboringCell(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], queue<Co
 	}
 }
 
-void WavePropagation(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], Coordinate beginCoordinate, Coordinate endCoordinate)
+void WavePropagation(Matrix &matrix, const Coordinate &beginCoordinate, const Coordinate &endCoordinate)
 {
 	queue<Coordinate> queueOfCoordinates;
 	queueOfCoordinates.push(beginCoordinate);
-	Coordinate thisCoordinate;
+	Coordinate curCoordinate;
 	short shortestWay;
 	while (matrix[endCoordinate.x][endCoordinate.y].shortestWay == -1 && !queueOfCoordinates.empty())
 	{
-		thisCoordinate = queueOfCoordinates.front();
+		curCoordinate = queueOfCoordinates.front();
 		queueOfCoordinates.pop();
-		shortestWay = matrix[thisCoordinate.x][thisCoordinate.y].shortestWay;
-		PassInNeighboringCell(matrix, queueOfCoordinates, thisCoordinate.x, thisCoordinate.y - 1, shortestWay);
-		PassInNeighboringCell(matrix, queueOfCoordinates, thisCoordinate.x - 1, thisCoordinate.y, shortestWay);
-		PassInNeighboringCell(matrix, queueOfCoordinates, thisCoordinate.x, thisCoordinate.y + 1, shortestWay);
-		PassInNeighboringCell(matrix, queueOfCoordinates, thisCoordinate.x + 1, thisCoordinate.y, shortestWay);
+		shortestWay = matrix[curCoordinate.x][curCoordinate.y].shortestWay;
+		PassInCell(matrix, queueOfCoordinates, shortestWay, curCoordinate.x, curCoordinate.y - 1);
+		PassInCell(matrix, queueOfCoordinates, shortestWay, curCoordinate.x - 1, curCoordinate.y);
+		PassInCell(matrix, queueOfCoordinates, shortestWay, curCoordinate.x, curCoordinate.y + 1);
+		PassInCell(matrix, queueOfCoordinates, shortestWay, curCoordinate.x + 1, curCoordinate.y);
 	}
 }
 
-bool CheckNeighboringCell(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], short &shortestWay, int8_t x, int8_t y)
+bool CheckCell(Matrix &matrix, short &shortestWay, int8_t x, int8_t y)
 {
 	if (matrix[x][y].ch != '#' && shortestWay - 1 == matrix[x][y].shortestWay)
 	{
@@ -125,38 +127,53 @@ bool CheckNeighboringCell(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], short &sh
 	return false;
 }
 
-void PathRecovery(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], Coordinate endCoordinate)
+void PathRecovery(Matrix &matrix, const Coordinate &endCoordinate)
 {
-	Coordinate thisCoordinate;
-	thisCoordinate = endCoordinate;
-	short shortestWay = matrix[thisCoordinate.x][thisCoordinate.y].shortestWay;
+	Coordinate curCoordinate = endCoordinate;
+	short shortestWay = matrix[curCoordinate.x][curCoordinate.y].shortestWay;
 	while (shortestWay > 1)
 	{
-		if (CheckNeighboringCell(matrix, shortestWay, thisCoordinate.x, thisCoordinate.y - 1))
+		if (CheckCell(matrix, shortestWay, curCoordinate.x, curCoordinate.y - 1))
 		{
-			thisCoordinate.y--;
+			curCoordinate.y--;
 			continue;
 		}
-		if (CheckNeighboringCell(matrix, shortestWay, thisCoordinate.x - 1, thisCoordinate.y))
+		if (CheckCell(matrix, shortestWay, curCoordinate.x - 1, curCoordinate.y))
 		{
-			thisCoordinate.x--;
+			curCoordinate.x--;
 			continue;
 		}
-		if (CheckNeighboringCell(matrix, shortestWay, thisCoordinate.x, thisCoordinate.y + 1))
+		if (CheckCell(matrix, shortestWay, curCoordinate.x, curCoordinate.y + 1))
 		{
-			thisCoordinate.y++;
+			curCoordinate.y++;
 			continue;
 		}
-		if (CheckNeighboringCell(matrix, shortestWay, thisCoordinate.x + 1, thisCoordinate.y))
+		if (CheckCell(matrix, shortestWay, curCoordinate.x + 1, curCoordinate.y))
 		{
-			thisCoordinate.x++;
+			curCoordinate.x++;
 			continue;
 		}
 	}
 }
 
-void PrintMatrix(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], ostream &fOut)
+void FindShortestWay(Matrix &matrix, const Coordinate &beginCoordinate, const Coordinate &endCoordinate)
 {
+	WavePropagation(matrix, beginCoordinate, endCoordinate);
+	if (matrix[endCoordinate.x][endCoordinate.y].shortestWay != -1)
+	{
+		PathRecovery(matrix, endCoordinate);
+	}
+}
+
+bool PrintMatrix(const Matrix &matrix, const string &outFileName)
+{
+	ofstream fOut;
+	fOut.open(outFileName);
+	if (!fOut.is_open())
+	{
+		return false;
+	}
+
 	for (short i = 1; i <= FIELD_SIZE; i++)
 	{
 		for (short j = 1; j <= FIELD_SIZE; j++)
@@ -165,6 +182,8 @@ void PrintMatrix(Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2], ostream &fOut)
 		}
 		fOut << endl;
 	}
+
+	return true;
 }
 
 int main(int argc, char* argv[])
@@ -175,40 +194,21 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	ifstream fIn;
-	ofstream fOut;
-	fIn.open(argv[1]);
-	fOut.open(argv[2]);
-
-	if (!fIn.is_open())
-	{
-		cout << "Failed to open input file\n";
-		return 1;
-	}
-	if (!fOut.is_open())
-	{
-		cout << "Failed to open output file\n";
-		return 1;
-	}
-
-	Cell matrix[FIELD_SIZE + 2][FIELD_SIZE + 2];
+	Matrix matrix;
 	Coordinate beginCoordinate, endCoordinate;
-
-	if (!FillMatrix(fIn, matrix, beginCoordinate, endCoordinate))
+	if (!FillMatrix(argv[1], matrix, beginCoordinate, endCoordinate))
 	{
 		cout << "Input error\n";
 		return 1;
 	}
 
-	CreateFrame(matrix);
-	WavePropagation(matrix, beginCoordinate, endCoordinate);
+	FindShortestWay(matrix, beginCoordinate, endCoordinate);
 
-	if (matrix[endCoordinate.x][endCoordinate.y].shortestWay != -1)
+	if (!PrintMatrix(matrix, argv[2]))
 	{
-		PathRecovery(matrix, endCoordinate);
+		cout << "Failed to open output file\n";
+		return 1;
 	}
-
-	PrintMatrix(matrix, fOut);
 
 	return 0;
 }

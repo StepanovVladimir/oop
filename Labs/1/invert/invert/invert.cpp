@@ -11,11 +11,18 @@ using namespace std;
 const int MATRIX_SIZE = 3;
 const int SUBMATRIX_SIZE = MATRIX_SIZE - 1;
 
-using Matrix = array<array<float, MATRIX_SIZE>, MATRIX_SIZE>;
-using Submatrix = array<array<float, SUBMATRIX_SIZE>, SUBMATRIX_SIZE>;
+using Matrix3x3 = array<array<float, MATRIX_SIZE>, MATRIX_SIZE>;
+using Matrix2x2 = array<array<float, SUBMATRIX_SIZE>, SUBMATRIX_SIZE>;
 
-bool FillMatrix(istream &fIn, Matrix &matrix)
+bool FillMatrix(const string &fileName, Matrix3x3 &matrix)
 {
+	ifstream fIn;
+	fIn.open(fileName);
+	if (!fIn.is_open())
+	{
+		return false;
+	}
+	
 	string str;
 	float f;
 	for (int i = 0; i < MATRIX_SIZE; i++)
@@ -39,9 +46,9 @@ bool FillMatrix(istream &fIn, Matrix &matrix)
 	return true;
 }
 
-Submatrix CreateSubmatrix(const Matrix &matrix, int matrixIndex1, int matrixIndex2)
+Matrix2x2 CreateSubmatrix(const Matrix3x3 &matrix, int matrixIndex1, int matrixIndex2)
 {
-	Submatrix submatrix;
+	Matrix2x2 submatrix;
 	int submatrixIndex1 = 0;
 	int submatrixIndex2 = 0;
 	for (int i = 0; i < MATRIX_SIZE; i++)
@@ -63,31 +70,53 @@ Submatrix CreateSubmatrix(const Matrix &matrix, int matrixIndex1, int matrixInde
 	return submatrix;
 }
 
-float GetDetOfSubmatrix(const Submatrix &submatrix)
+float GetDetOfMatrix2x2(const Matrix2x2 &matrix)
 {
-	return submatrix[0][0] * submatrix[1][1] - submatrix[0][1] * submatrix[1][0];
+	return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
 }
 
-float GetDetOfMatrix(const Matrix &matrix)
+float GetDetOfMatrix3x3(const Matrix3x3 &matrix)
 {
 	float det = 0.f;
-	Submatrix submatrix;
+	Matrix2x2 submatrix;
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
 		submatrix = CreateSubmatrix(matrix, 0, i);
 		if (i % 2 == 0)
 		{
-			det += matrix[0][i] * GetDetOfSubmatrix(submatrix);
+			det += matrix[0][i] * GetDetOfMatrix2x2(submatrix);
 		}
 		else
 		{
-			det -= matrix[0][i] * GetDetOfSubmatrix(submatrix);
+			det -= matrix[0][i] * GetDetOfMatrix2x2(submatrix);
 		}
 	}
 	return det;
 }
 
-void TransposeMatrix(Matrix &matrix)
+Matrix3x3 CreateCofactorMatrix(const Matrix3x3 &matrix)
+{
+	Matrix3x3 cofactorMatrix;
+	Matrix2x2 submatrix;
+	for (int i = 0; i < MATRIX_SIZE; i++)
+	{
+		for (int j = 0; j < MATRIX_SIZE; j++)
+		{
+			submatrix = CreateSubmatrix(matrix, i, j);
+			if ((i + j) % 2 == 0)
+			{
+				cofactorMatrix[i][j] = GetDetOfMatrix2x2(submatrix);
+			}
+			else
+			{
+				cofactorMatrix[i][j] = -GetDetOfMatrix2x2(submatrix);
+			}
+		}
+	}
+	return cofactorMatrix;
+}
+
+void TransposeMatrix(Matrix3x3 &matrix)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -98,29 +127,7 @@ void TransposeMatrix(Matrix &matrix)
 	}
 }
 
-Matrix CreateCofactorMatrix(const Matrix &matrix)
-{
-	Matrix cofactorMatrix;
-	Submatrix submatrix;
-	for (int i = 0; i < MATRIX_SIZE; i++)
-	{
-		for (int j = 0; j < MATRIX_SIZE; j++)
-		{
-			submatrix = CreateSubmatrix(matrix, i, j);
-			if ((i + j) % 2 == 0)
-			{
-				cofactorMatrix[i][j] = GetDetOfSubmatrix(submatrix);
-			}
-			else
-			{
-				cofactorMatrix[i][j] = -GetDetOfSubmatrix(submatrix);
-			}
-		}
-	}
-	return cofactorMatrix;
-}
-
-void DivMatrix(Matrix &matrix, float divider)
+void DivMatrix(Matrix3x3 &matrix, float divider)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -131,14 +138,20 @@ void DivMatrix(Matrix &matrix, float divider)
 	}
 }
 
-void CalculateInverseMatrix(Matrix &matrix, float det)
+bool CalculateInverseMatrix(const Matrix3x3 &matrix, Matrix3x3 &inverseMatrix)
 {
-	TransposeMatrix(matrix);
-	matrix = CreateCofactorMatrix(matrix);
-	DivMatrix(matrix, det);
+	float det = GetDetOfMatrix3x3(matrix);
+	if (det == 0)
+	{
+		return false;
+	}
+	inverseMatrix = CreateCofactorMatrix(matrix);
+	TransposeMatrix(inverseMatrix);
+	DivMatrix(inverseMatrix, det);
+	return true;
 }
 
-void PrintMatrix(const Matrix &matrix)
+void PrintMatrix(const Matrix3x3 &matrix)
 {
 	for (int i = 0; i < MATRIX_SIZE; i++)
 	{
@@ -160,33 +173,21 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	ifstream fIn;
-	fIn.open(argv[1]);
-
-	if (!fIn.is_open())
-	{
-		cout << "Failed to open input file\n";
-		return 1;
-	}
-
-	Matrix matrix;
-
-	if (!FillMatrix(fIn, matrix))
+	Matrix3x3 matrix;
+	if (!FillMatrix(argv[1], matrix))
 	{
 		cout << "Input error\n";
 		return 1;
 	}
 
-	float det = GetDetOfMatrix(matrix);
-
-	if (det == 0)
+	Matrix3x3 inverseMatrix;
+	if (!CalculateInverseMatrix(matrix, inverseMatrix))
 	{
 		cout << "The determinant is 0, so the inverse matrix cannot be calculated.\n";
 	}
 	else
 	{
-		CalculateInverseMatrix(matrix, det);
-		PrintMatrix(matrix);
+		PrintMatrix(inverseMatrix);
 	}
 
 	return 0;

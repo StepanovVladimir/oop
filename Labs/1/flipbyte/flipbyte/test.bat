@@ -30,4 +30,4 @@ exit /B 0
 
 :err
 echo Program testing failed
-exit /B 1
+exit /B 0

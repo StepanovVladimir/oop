@@ -6,6 +6,9 @@
 
 using namespace std;
 
+const uint8_t MAX_BYTE = 255;
+const string CRYPT = "crypt";
+const string DECRYPT = "decrypt";
 const int NUMBER_OF_BITS = 8;
 map<uint8_t, uint8_t> BIT_MASK = {
 		{1, 1 << 2},
@@ -17,6 +20,30 @@ map<uint8_t, uint8_t> BIT_MASK = {
 		{1 << 6, 1 << 1},
 		{1 << 7, 1 << 5}
 };
+
+bool StrToByte(const string &str, uint8_t &byte)
+{
+	int number;
+	try
+	{
+		number = stoi(str);
+	}
+	catch (const invalid_argument &)
+	{
+		return false;
+	}
+	catch (const out_of_range &)
+	{
+		return false;
+	}
+
+	if (number > MAX_BYTE)
+	{
+		return false;
+	}
+	byte = number;
+	return true;
+}
 
 uint8_t MixingBits(uint8_t byte)
 {
@@ -31,8 +58,17 @@ uint8_t MixingBits(uint8_t byte)
 	return encryptedByte;
 }
 
-void Encrypt(istream &fIn, ostream &fOut, uint8_t key)
+bool Encrypt(const string &inFileName, const string &outFileName, uint8_t key)
 {
+	ifstream fIn;
+	ofstream fOut;
+	fIn.open(inFileName);
+	fOut.open(outFileName);
+	if (!fIn.is_open() || !fOut.is_open())
+	{
+		return false;
+	}
+
 	char byte;
 	uint8_t encryptedByte;
 	while (fIn.get(byte))
@@ -41,23 +77,33 @@ void Encrypt(istream &fIn, ostream &fOut, uint8_t key)
 		encryptedByte = MixingBits(byte);
 		fOut << encryptedByte;
 	}
+	return true;
 }
 
 uint8_t MixingBitsBack(uint8_t byte)
 {
-	uint8_t encryptedByte = 0;
+	uint8_t decryptedByte = 0;
 	for (int i = 0; i < NUMBER_OF_BITS; i++)
 	{
 		if ((byte & BIT_MASK[1 << i]) != 0)
 		{
-			encryptedByte |= 1 << i;
+			decryptedByte |= 1 << i;
 		}
 	}
-	return encryptedByte;
+	return decryptedByte;
 }
 
-void Decrypt(istream &fIn, ostream &fOut, uint8_t key)
+bool Decrypt(const string &inFileName, const string &outFileName, uint8_t key)
 {
+	ifstream fIn;
+	ofstream fOut;
+	fIn.open(inFileName);
+	fOut.open(outFileName);
+	if (!fIn.is_open() || !fOut.is_open())
+	{
+		return false;
+	}
+
 	char byte;
 	uint8_t decryptedByte;
 	while (fIn.get(byte))
@@ -66,6 +112,7 @@ void Decrypt(istream &fIn, ostream &fOut, uint8_t key)
 		decryptedByte ^= key;
 		fOut << decryptedByte;
 	}
+	return true;
 }
 
 int main(int argc, char *argv[])
@@ -76,52 +123,28 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	ifstream fIn;
-	ofstream fOut;
-	fIn.open(argv[2]);
-	fOut.open(argv[3]);
-
-	if (!fIn.is_open())
-	{
-		cout << "Failed to open input file\n";
-		return 1;
-	}
-	if (!fOut.is_open())
-	{
-		cout << "Failed to open output file\n";
-		return 1;
-	}
-
-	int number;
-	try
-	{
-		number = stoi(argv[4]);
-	}
-	catch (const invalid_argument &err)
-	{
-		cout << "You entered not number from 0 to 255\n";
-		return 1;
-	}
-	catch (const out_of_range &err)
+	uint8_t key;
+	if (!StrToByte(argv[4], key))
 	{
 		cout << "You entered not number from 0 to 255\n";
 		return 1;
 	}
 
-	if (number > 255)
+	if (argv[1] == CRYPT)
 	{
-		cout << "You entered not number from 0 to 255\n";
-		return 1;
+		if (!Encrypt(argv[2], argv[3], key))
+		{
+			cout << "Failed to open files\n";
+			return 1;
+		}
 	}
-
-	string command = argv[1];
-	if (command == "crypt")
+	else if (argv[1] == DECRYPT)
 	{
-		Encrypt(fIn, fOut, number);
-	}
-	else if (command == "decrypt")
-	{
-		Decrypt(fIn, fOut, number);
+		if (!Decrypt(argv[2], argv[3], key))
+		{
+			cout << "Failed to open files\n";
+			return 1;
+		}
 	}
 	else
 	{

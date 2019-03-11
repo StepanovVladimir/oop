@@ -188,7 +188,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="badInput.txt" />
-    <Text Include="failedFile-out.txt" />
     <Text Include="matrix1-out.txt" />
     <Text Include="matrix2-out.txt" />
     <Text Include="matrix2.txt" />
