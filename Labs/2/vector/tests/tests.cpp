@@ -1,29 +1,6 @@
 ﻿#define CATCH_CONFIG_MAIN
 #include "../../../../catch2/catch.hpp"
-#include "../vector/Functions.h"
-
-TEST_CASE("FillArray tests")
-{
-	vector<float> numbers;
-
-	SECTION("Errors in input")
-	{
-		CHECK(FillArray("lalala", numbers) == false);
-		CHECK(FillArray("badInput.txt", numbers) == false);
-	}
-	
-	SECTION("Empty input")
-	{
-		CHECK(FillArray("empty.txt", numbers) == true);
-		CHECK(numbers == vector<float>{});
-	}
-
-	SECTION("Good input")
-	{
-		CHECK(FillArray("input.txt", numbers) == true);
-		CHECK(numbers == vector<float>{ 6.43f, 3.f, 1.43f, -5.43f, -2.f, 4.34f });
-	}
-}
+#include "../vector/ArrayHandler.h"
 
 TEST_CASE("FindMin tests")
 {

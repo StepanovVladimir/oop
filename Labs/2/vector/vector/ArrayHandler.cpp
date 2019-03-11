@@ -1,35 +1,7 @@
 #include "pch.h"
-#include "Functions.h"
-#include <iostream>
-#include <fstream>
+#include "ArrayHandler.h"
 #include <sstream>
 #include <algorithm>
-
-bool FillArray(const string &fileName, vector<float> &numbers)
-{
-	ifstream fIn;
-	fIn.open(fileName);
-	if (!fIn.is_open())
-	{
-		return false;
-	}
-
-	string str;
-	float f;
-	fIn >> str;
-	while (!fIn.eof())
-	{
-		istringstream strm(str);
-		strm >> f;
-		if (!strm)
-		{
-			return false;
-		}
-		numbers.push_back(f);
-		fIn >> str;
-	}
-	return true;
-}
 
 float FindMin(const vector<float> &numbers)
 {

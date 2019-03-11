@@ -26,13 +26,8 @@
     <ClCompile Include="tests.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\vector\Functions.cpp">
+    <ClCompile Include="..\vector\ArrayHandler.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="input.txt" />
-    <Text Include="badInput.txt" />
-    <Text Include="empty.txt" />
   </ItemGroup>
 </Project>

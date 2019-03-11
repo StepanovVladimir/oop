@@ -1,55 +1,55 @@
 ﻿#include "pch.h"
-#include "Functions.h"
+#include "ArrayHandler.h"
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <iomanip>
 
-bool PrintArray(const vector<float> &numbers, const string &fileName)
+bool FillArray(vector<float> &numbers)
 {
-	ofstream fOut;
-	fOut.open(fileName);
-	if (!fOut.is_open())
+	string str;
+	float f;
+	cin >> str;
+	while (!cin.eof())
 	{
-		return false;
+		istringstream strm(str);
+		strm >> f;
+		if (!strm)
+		{
+			return false;
+		}
+		numbers.push_back(f);
+		cin >> str;
 	}
+	return true;
+}
 
+void PrintArray(const vector<float> &numbers)
+{
 	for (int i = 0; i < numbers.size(); i++)
 	{
 		ostringstream strm;
 		strm << fixed << setprecision(3) << numbers[i];
-		fOut << strm.str();
+		cout << strm.str();
 		if (i < numbers.size() - 1)
 		{
-			fOut << ' ';
+			cout << ' ';
 		}
 	}
-	fOut << endl;
+	cout << endl;
 }
 
-int main(int argc, char *argv[])
+int main()
 {
-	if (argc < 3)
-	{
-		cout << "You have not entered files\n";
-		return 1;
-	}
-
 	vector<float> numbers;
-	
-	if (!FillArray(argv[1], numbers))
+
+	if (!FillArray(numbers))
 	{
 		cout << "Input error\n";
 		return 1;
 	}
 
 	ProcessingArray(numbers);
-
-	if (!PrintArray(numbers, argv[2]))
-	{
-		cout << "Output error\n";
-		return 1;
-	}
+	PrintArray(numbers);
 
 	return 0;
 }
