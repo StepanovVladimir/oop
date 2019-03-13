@@ -13,7 +13,7 @@ string GetChangedStr(const string& str, const string& searchStr, const string& r
 	while (index < str.length())
 	{
 		foundIndex = str.find(searchStr, index);
-		if (foundIndex != string::npos && searchStr.length() > 0)
+		if (foundIndex != string::npos && searchStr != "")
 		{
 			changedStr.append(str, index, foundIndex - index);
 			changedStr.append(replaceStr);
