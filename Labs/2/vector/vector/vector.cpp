@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 bool FillArray(vector<float> &numbers)
 {
@@ -25,7 +26,7 @@ bool FillArray(vector<float> &numbers)
 
 void PrintArray(const vector<float> &numbers)
 {
-	for (int i = 0; i < numbers.size(); i++)
+	for (size_t i = 0; i < numbers.size(); i++)
 	{
 		ostringstream strm;
 		strm << fixed << setprecision(3) << numbers[i];
@@ -49,6 +50,7 @@ int main()
 	}
 
 	ProcessingArray(numbers);
+	sort(numbers.begin(), numbers.end());
 	PrintArray(numbers);
 
 	return 0;

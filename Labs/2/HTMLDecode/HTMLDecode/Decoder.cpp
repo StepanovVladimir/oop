@@ -21,7 +21,7 @@ string GetChangedStr(const string& str, const string& searchStr, const char& rep
 	while (index < str.length())
 	{
 		foundIndex = str.find(searchStr, index);
-		if (foundIndex != string::npos)
+		if (foundIndex != string::npos && searchStr != "")
 		{
 			changedStr.append(str, index, foundIndex - index);
 			changedStr += replaceCh;
