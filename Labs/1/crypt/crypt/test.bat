@@ -16,7 +16,7 @@ fc %OUT% notByte-out.txt || goto err
 %PROGRAM% crypt decrypted.txt output.txt 300 > %OUT%
 fc %OUT% notByte-out.txt || goto err
 
-%PROGRAM% crypt lalala output.txt 6 > %OUT%
+%PROGRAM% crypt nonExistentFile output.txt 6 > %OUT%
 fc %OUT% failedFile-out.txt || goto err
 
 %PROGRAM% crypt decrypted.txt output.txt 6 || goto err

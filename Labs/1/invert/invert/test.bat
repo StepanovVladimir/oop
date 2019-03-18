@@ -7,7 +7,7 @@ set OUT="%TEMP%\out.txt"
 %PROGRAM% > %OUT%
 fc %OUT% noArguments-out.txt || goto err
 
-%PROGRAM% lalala > %OUT%
+%PROGRAM% nonExistentFile > %OUT%
 fc %OUT% inputError-out.txt || goto err
 
 %PROGRAM% notEnoughNumbers.txt > %OUT%
