@@ -1,1 +1,3 @@
-Not all arguments are specified
+Not all arguments are specified.
+The command line must be in the following format:
+crypt.exe <command> <input file> <output file> <key>
