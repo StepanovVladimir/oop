@@ -9,10 +9,9 @@ string GetChangedStr(const string& str, const string& searchStr, const string& r
 {
 	string changedStr;
 	size_t index = 0;
-	size_t foundIndex;
 	while (index < str.length())
 	{
-		foundIndex = str.find(searchStr, index);
+		size_t foundIndex = str.find(searchStr, index);
 		if (foundIndex != string::npos && searchStr != "")
 		{
 			changedStr.append(str, index, foundIndex - index);
