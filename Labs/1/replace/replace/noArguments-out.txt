@@ -1,1 +1,3 @@
-Not all arguments are specified
+Not all arguments are specified.
+The command line must be in the following format:
+replace.exe <input file> <output file> <search string> <replace string>
