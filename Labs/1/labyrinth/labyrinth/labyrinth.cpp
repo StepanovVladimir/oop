@@ -190,7 +190,9 @@ int main(int argc, char* argv[])
 {
 	if (argc < 3)
 	{
-		cout << "Not all arguments are specified\n";
+		cout << "Not all arguments are specified.\n";
+		cout << "The command line must be in the following format:\n";
+		cout << "labyrinth.exe <input file> <output file>\n";
 		return 1;
 	}
 
