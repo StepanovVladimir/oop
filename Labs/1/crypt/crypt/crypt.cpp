@@ -119,7 +119,9 @@ int main(int argc, char *argv[])
 {
 	if (argc < 5)
 	{
-		cout << "Not all arguments are specified\n";
+		cout << "Not all arguments are specified.\n";
+		cout << "The command line must be in the following format:\n";
+		cout << "crypt.exe <command> <input file> <output file> <key>\n";
 		return 1;
 	}
 
