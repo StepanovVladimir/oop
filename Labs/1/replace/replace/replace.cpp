@@ -55,7 +55,9 @@ int main(int argc, char *argv[])
 {
 	if (argc < 5)
 	{
-		cout << "Not all arguments are specified\n";
+		cout << "Not all arguments are specified.\n";
+		cout << "The command line must be in the following format:\n";
+		cout << "replace.exe <input file> <output file> <search string> <replace string>\n";
 		return 1;
 	}
 
