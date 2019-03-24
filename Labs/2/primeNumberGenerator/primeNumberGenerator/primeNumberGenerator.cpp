@@ -23,15 +23,15 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	optional<set<int>> primeNumbers = GetPrimeNumbersSet(argv[1]);
-
-	if (!primeNumbers)
+	int upperBound;
+	if (!StrToNumber(argv[1], upperBound))
 	{
 		cout << "Unexpected argument";
 		return 1;
 	}
 
-	PrintSet(primeNumbers.value());
+	set<int> primeNumbers = GeneratePrimeNumbersSet(upperBound);
+	PrintSet(primeNumbers);
 
 	return 0;
 }

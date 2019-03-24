@@ -33,6 +33,8 @@ vector<bool> GetPrimeBoolVector(int upperBound)
 		return vector<bool>{};
 	}
 	vector<bool> arePrimeNumbers(upperBound + 1, true);
+	arePrimeNumbers[0] = false;
+	arePrimeNumbers[1] = false;
 	size_t maxDivider = (int)sqrt(arePrimeNumbers.size());
 	for (size_t i = 2; i <= maxDivider; i++)
 	{
@@ -47,31 +49,21 @@ vector<bool> GetPrimeBoolVector(int upperBound)
 	return arePrimeNumbers;
 }
 
-set<int> BoolVectorToSet(const vector<bool> &arePrimeNumbers)
+set<int> BoolVectorToIntSet(const vector<bool> &boolVector)
 {
-	set<int> primeNumbers;
-	for (size_t i = 2; i < arePrimeNumbers.size(); i++)
+	set<int> intSet;
+	for (size_t i = 0; i < boolVector.size(); i++)
 	{
-		if (arePrimeNumbers[i])
+		if (boolVector[i])
 		{
-			primeNumbers.insert(i);
+			intSet.insert((int)i);
 		}
 	}
-	return primeNumbers;
+	return intSet;
 }
 
 set<int> GeneratePrimeNumbersSet(int upperBound)
 {
 	vector<bool> arePrimeNumbers = GetPrimeBoolVector(upperBound);
-	return BoolVectorToSet(arePrimeNumbers);
-}
-
-optional<set<int>> GetPrimeNumbersSet(const string &str)
-{
-	int upperBound;
-	if (!StrToNumber(str, upperBound))
-	{
-		return nullopt;
-	}
-	return GeneratePrimeNumbersSet(upperBound);
+	return BoolVectorToIntSet(arePrimeNumbers);
 }
