@@ -29,5 +29,10 @@ TEST_CASE("BoolVectorToSet tests")
 TEST_CASE("GeneratePrimeNumbersSet tests")
 {
 	CHECK(GeneratePrimeNumbersSet(20) == set<int>{ 2, 3, 5, 7, 11, 13, 17, 19 });
+
+#ifdef NDEBUG
+
 	CHECK(GeneratePrimeNumbersSet(100000000).size() == 5761455);
+
+#endif
 }
