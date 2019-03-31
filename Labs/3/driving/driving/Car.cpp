@@ -26,49 +26,68 @@ bool CCar::TurnOffEngine()
 	return true;
 }
 
-bool CCar::TrySetPositiveGear(int gear, int lowerBound, int upperBound)
+void CCar::TrySetPositiveGear(int gear, int lowerBound, int upperBound)
 {
-	if (!m_engineIsOn || m_dirOfMove == DirOfMove::Back || m_speed < lowerBound || m_speed > upperBound)
+	if (!m_engineIsOn)
 	{
-		return false;
+		throw string("You cannot set this gear because the engine is off.\n");
+	}
+	if (m_dirOfMove == DirOfMove::Back)
+	{
+		throw string("You cannot set positive gear because the car moves back.\n");
+	}
+	if (m_speed < lowerBound || m_speed > upperBound)
+	{
+		throw string("You cannot set this gear because car speed outside the speed range for this gear.\n");
 	}
 	m_gear = gear;
-	return true;
 }
 
-bool CCar::SetGear(int gear)
+void CCar::SetGear(int gear)
 {
 	switch (gear)
 	{
 	case -1:
-		if (m_gear != gear && (!m_engineIsOn || m_speed != 0))
+		if (m_gear != gear)
 		{
-			return false;
+			if (!m_engineIsOn)
+			{
+				throw string("You cannot set this gear because the engine is off.\n");
+			}
+			if (m_speed != 0)
+			{
+				throw string("You cannot set reverse gear because the speed is not zero.");
+			}
 		}
 		m_gear = gear;
-		return true;
+		break;
 
 	case 0:
 		m_gear = gear;
-		return true;
+		break;
 
 	case 1:
-		return TrySetPositiveGear(gear, 0, 30);
+		TrySetPositiveGear(gear, 0, 30);
+		break;
 
 	case 2:
-		return TrySetPositiveGear(gear, 20, 50);
+		TrySetPositiveGear(gear, 20, 50);
+		break;
 
 	case 3:
-		return TrySetPositiveGear(gear, 30, 60);
+		TrySetPositiveGear(gear, 30, 60);
+		break;
 
 	case 4:
-		return TrySetPositiveGear(gear, 40, 90);
+		TrySetPositiveGear(gear, 40, 90);
+		break;
 
 	case 5:
-		return TrySetPositiveGear(gear, 50, 150);
+		TrySetPositiveGear(gear, 50, 150);
+		break;
 
 	default:
-		return false;
+		throw string("No such gear.\n");
 	}
 }
 

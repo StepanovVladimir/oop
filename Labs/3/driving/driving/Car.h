@@ -9,7 +9,7 @@ public:
 
 	void TurnOnEngine();
 	bool TurnOffEngine();
-	bool SetGear(int gear);
+	void SetGear(int gear);
 	bool SetSpeed(int speed);
 
 	std::string GetEngineCondition() const;
@@ -30,6 +30,6 @@ private:
 	int m_gear;
 	int m_speed;
 
-	bool TrySetPositiveGear(int gear, int lowerBound, int upperBound);
+	void TrySetPositiveGear(int gear, int lowerBound, int upperBound);
 	bool TrySetSpeed(int speed, int lowerBound, int upperBound, DirOfMove dir);
 };

@@ -16,7 +16,7 @@ void TryTurnOffEngine(CCar &car)
 {
 	if (!car.TurnOffEngine())
 	{
-		cout << "You cannot turn off the engine.\n";
+		cout << "You cannot turn off the engine. Gear and speed must be zero\n";
 	}
 }
 
@@ -46,9 +46,13 @@ void TrySetGear(CCar &car)
 	{
 		cout << "Unexpected command argument \"SetGear\". Input in the form \"SetGear <integer>\" was expected.\n";
 	}
-	else if (!car.SetGear(gear))
+	else try
 	{
-		cout << "You cannot set this gear.\n";
+		car.SetGear(gear);
+	}
+	catch (const string &err)
+	{
+		cout << err;
 	}
 }
 
@@ -61,7 +65,7 @@ void TrySetSpeed(CCar &car)
 	}
 	else if (!car.SetSpeed(speed))
 	{
-		cout << "You cannot set this speed.\n";
+		cout << "You cannot set this speed because it outside the speed range for this gear.\n";
 	}
 }
 
