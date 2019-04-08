@@ -1,73 +1,57 @@
 #include "pch.h"
 #include "Function.h"
-#include "Storage.h"
+#include "Calculator.h"
 #include <iostream>
 
 using namespace std;
 
 CFunction::CFunction(const string &argName)
-	:m_arg1Name(argName),
-	m_operation(Operation::No)
+	: m_arg1Name(argName),
+	m_operation(Operation::No),
+	m_valueHasCalculated(false)
 {
 }
 
 CFunction::CFunction(const string &arg1Name, Operation operation, const string &arg2Name)
-	:m_arg1Name(arg1Name),
+	: m_arg1Name(arg1Name),
 	m_operation(operation),
-	m_arg2Name(arg2Name)
+	m_arg2Name(arg2Name),
+	m_valueHasCalculated(false)
 {
 }
 
-optional<float> CFunction::GetValue() const
+void CFunction::SetValue(optional<double> value)
 {
-	optional<float> arg1, arg2;
-	switch (m_operation)
-	{
-	case Operation::No:
-		return CStorage::GetValue(m_arg1Name);
+	m_value = value;
+	m_valueHasCalculated = true;
+}
 
-	case Operation::Add:
-		arg1 = CStorage::GetValue(m_arg1Name);
-		arg2 = CStorage::GetValue(m_arg2Name);
-		if (!arg1 || !arg2)
-		{
-			
-			return nullopt;
-		}
-		return arg1.value() + arg2.value();
+void CFunction::DropValue()
+{
+	m_valueHasCalculated = false;
+}
 
-	case Operation::Sub:
-		arg1 = CStorage::GetValue(m_arg1Name);
-		arg2 = CStorage::GetValue(m_arg2Name);
-		if (!arg1 || !arg2)
-		{
-			return nullopt;
-		}
-		return arg1.value() - arg2.value();
+string CFunction::GetArg1Name() const
+{
+	return m_arg1Name;
+}
 
-	case Operation::Mul:
-		arg1 = CStorage::GetValue(m_arg1Name);
-		arg2 = CStorage::GetValue(m_arg2Name);
-		if (!arg1 || !arg2)
-		{
-			return nullopt;
-		}
-		return arg1.value() * arg2.value();
+string CFunction::GetArg2Name() const
+{
+	return m_arg2Name;
+}
 
-	case Operation::Div:
-		arg1 = CStorage::GetValue(m_arg1Name);
-		arg2 = CStorage::GetValue(m_arg2Name);
-		if (!arg1 || !arg2)
-		{
-			return nullopt;
-		}
-		if (arg2.value() == 0)
-		{
-			throw string("Division by zero occurs");
-		}
-		return arg1.value() / arg2.value();
+CFunction::Operation CFunction::GetOperation() const
+{
+	return m_operation;
+}
 
-	default:
-		return nullopt;
-	}
+bool CFunction::ValueHasCalculated() const
+{
+	return m_valueHasCalculated;
+}
+
+optional<double> CFunction::GetValue() const
+{
+	return m_value;
 }

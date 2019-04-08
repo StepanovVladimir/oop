@@ -29,10 +29,10 @@
     <ClCompile Include="..\calculator\Function.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\calculator\Storage.cpp">
+    <ClCompile Include="..\calculator\Variable.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="..\calculator\Variable.cpp">
+    <ClCompile Include="..\calculator\Calculator.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

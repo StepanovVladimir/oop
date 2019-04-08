@@ -6,13 +6,12 @@
 class CVariable
 {
 public:
-	CVariable();
-	CVariable(std::optional<float> value);
+	CVariable(std::optional<double> value = std::nullopt);
 
-	void SetValue(std::optional<float> value);
+	void SetValue(std::optional<double> value);
 
-	std::optional<float> GetValue() const;
+	std::optional<double> GetValue() const;
 
 private:
-	std::optional<float> m_value;
+	std::optional<double> m_value;
 };

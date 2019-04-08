@@ -170,8 +170,8 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\calculator\Calculator.cpp" />
     <ClCompile Include="..\calculator\Function.cpp" />
-    <ClCompile Include="..\calculator\Storage.cpp" />
     <ClCompile Include="..\calculator\Variable.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

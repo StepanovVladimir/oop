@@ -3,22 +3,17 @@
 
 using namespace std;
 
-CVariable::CVariable()
-	:m_value(nullopt)
+CVariable::CVariable(optional<double> value)
+	: m_value(value)
 {
 }
 
-CVariable::CVariable(optional<float> value)
-	:m_value(value)
-{
-}
-
-void CVariable::SetValue(optional<float> value)
+void CVariable::SetValue(optional<double> value)
 {
 	m_value = value;
 }
 
-optional<float> CVariable::GetValue() const
+optional<double> CVariable::GetValue() const
 {
 	return m_value;
 }

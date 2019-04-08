@@ -1,322 +1,201 @@
-﻿#include "pch.h"
-#include <iostream>
-#include "Storage.h"
-#include <sstream>
+#include "pch.h"
+#include "Calculator.h"
 
 using namespace std;
 
-void CheckCorrectOfIdentifier(const string &identifierName)
+void CCalculator::SaveVar(const string &name)
 {
-	if (identifierName == "")
+	auto iter = m_types.find(name);
+	if (iter != m_types.end())
 	{
-		throw string("Invalid input string");
+		throw runtime_error("There is already a identifier with name: " + name);
 	}
 
-	char ch = identifierName[0];
-	if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && ch != '_')
-	{
-		throw string("Invalid identifier name");
-	}
-
-	for (size_t i = 1; i < identifierName.size(); i++)
-	{
-		ch = identifierName[i];
-		if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && (ch < '0' || ch > '9') && ch != '_')
-		{
-			throw string("Invalid identifier name");
-		}
-	}
+	m_variables[name] = CVariable();
+	m_types[name] = IdentifierType::Var;
 }
 
-void CheckEndOfLine(istream &inStrm)
+void CCalculator::SaveVar(const string &name, double value)
 {
-	char ch;
-	while (inStrm.get(ch))
+	auto iterFunc = m_functions.find(name);
+	if (iterFunc != m_functions.end())
 	{
-		if (ch != ' ')
-		{
-			throw string("Invalid input string");
-		}
-	}
-}
-
-void SaveUndefinedVar(istream &inStrm)
-{
-	string varName;
-	inStrm >> varName;
-
-	CheckCorrectOfIdentifier(varName);
-	CheckEndOfLine(inStrm);
-
-	CStorage::SaveVar(varName);
-}
-
-string GetIdentifierName(istream &inStrm)
-{
-	char ch;
-	while (inStrm.get(ch))
-	{
-		if (ch != ' ')
-		{
-			break;
-		}
+		throw runtime_error("There is already a function with name: " + name);
 	}
 
-	if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && ch != '_')
+	auto iterVar = m_variables.find(name);
+	if (iterVar == m_variables.end())
 	{
-		throw string("Invalid identifier name");
-	}
-
-	string identifierName;
-	identifierName += ch;
-
-	while (inStrm.get(ch))
-	{
-		if (ch == ' ' || ch == '=')
-		{
-			break;
-		}
-		if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && (ch < '0' || ch > '9') && ch != '_')
-		{
-			throw string("Invalid identifier name");
-		}
-		identifierName += ch;
-	}
-
-	if (inStrm.eof())
-	{
-		throw string("Invalid input string");
-	}
-
-	if (ch == ' ')
-	{
-		inStrm >> ch;
-		if (ch != '=')
-		{
-			throw string("Invalid input string");
-		}
-	}
-	return identifierName;
-}
-
-void SaveDefinedVar(istream &inStrm)
-{
-	string varName = GetIdentifierName(inStrm);
-
-	string str;
-	float f;
-	inStrm >> str;
-	istringstream strm(str);
-	strm >> f;
-	if (strm)
-	{
-		if (!strm.eof())
-		{
-			throw string("Invalid identifier name");
-		}
-		CheckEndOfLine(inStrm);
-		CStorage::SaveVar(varName, f);
+		m_variables[name] = CVariable(value);
+		m_types[name] = IdentifierType::Var;
 	}
 	else
 	{
-		CheckCorrectOfIdentifier(str);
-		CheckEndOfLine(inStrm);
-		CStorage::SaveVar(varName, str);
+		iterVar->second.SetValue(value);
+		for (auto &function : m_functions)
+		{
+			function.second.DropValue();
+		}
 	}
 }
 
-CFunction::Operation GetOperation(char ch)
+void CCalculator::SaveVar(const string &name, const std::string &identifier)
 {
-	switch (ch)
+	auto iterFunc = m_functions.find(name);
+	if (iterFunc != m_functions.end())
 	{
-	case '+':
-		return CFunction::Operation::Add;
-	case '-':
-		return CFunction::Operation::Sub;
-	case '*':
-		return CFunction::Operation::Mul;
-	case '/':
-		return CFunction::Operation::Div;
-	default:
-		return CFunction::Operation::No;
-	}
-}
-
-void SaveFunc(istream &inStrm)
-{
-	string funcName = GetIdentifierName(inStrm);
-	char ch;
-	while (inStrm.get(ch))
-	{
-		if (ch != ' ')
-		{
-			break;
-		}
+		throw runtime_error("There is already a function with name: " + name);
 	}
 
-	if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && ch != '_')
+	auto iterVar = m_variables.find(name);
+	if (iterVar == m_variables.end())
 	{
-		throw string("Invalid identifier name");
-	}
-	string arg1Name;
-	arg1Name += ch;
-	while (inStrm.get(ch))
-	{
-		if (ch == ' ' || ch == '+' || ch == '-' || ch == '*' || ch == '/')
-		{
-			break;
-		}
-		if ((ch < 'a' || ch > 'z') && (ch < 'A' || ch > 'Z') && (ch < '0' || ch > '9') && ch != '_')
-		{
-			throw string("Invalid identifier name");
-		}
-		arg1Name += ch;
-	}
-
-	if (ch == ' ')
-	{
-		inStrm >> ch;
-		if (ch != ' ' && ch != '+' && ch != '-' && ch != '*' && ch != '/')
-		{
-			throw string("Invalid input string");
-		}
-	}
-
-	if (inStrm.eof())
-	{
-		CStorage::SaveFunc(funcName, arg1Name);
+		m_variables[name] = CVariable(GetValue(identifier));
+		m_types[name] = IdentifierType::Var;
 	}
 	else
 	{
-		CFunction::Operation operation = GetOperation(ch);
-		string arg2Name;
-		inStrm >> arg2Name;
-		CheckCorrectOfIdentifier(arg2Name);
-		CheckEndOfLine(inStrm);
-		CStorage::SaveFunc(funcName, arg1Name, operation, arg2Name);
+		iterVar->second.SetValue(GetValue(identifier));
+		for (auto &function : m_functions)
+		{
+			function.second.DropValue();
+		}
 	}
 }
 
-void PrintValue(istream &inStrm)
+void CCalculator::SaveFunc(const string &name, const string &argName)
 {
-	string identifierName;
-	inStrm >> identifierName;
-	CheckCorrectOfIdentifier(identifierName);
-	CheckEndOfLine(inStrm);
-
-	optional<float> value = CStorage::GetValue(identifierName);
-	if (!value)
+	auto iter = m_types.find(name);
+	if (iter != m_types.end())
 	{
-		cout << "nan\n";
+		throw runtime_error("There is already a identifier with name: " + name);
+	}
+
+	auto iterArg = m_types.find(argName);
+	if (iterArg == m_types.end())
+	{
+		throw runtime_error("There is no identifier with the name: " + argName);
+	}
+
+	m_functions.emplace(name, CFunction(argName));
+	m_types[name] = IdentifierType::Func;
+}
+
+void CCalculator::SaveFunc(const string &name, const string &arg1Name, CFunction::Operation operation, const string &arg2Name)
+{
+	auto iter = m_types.find(name);
+	if (iter != m_types.end())
+	{
+		throw runtime_error("There is already a identifier with name: " + name);
+	}
+
+	auto iterArg1 = m_types.find(arg1Name);
+	if (iterArg1 == m_types.end())
+	{
+		throw runtime_error("There is no identifier with the name: " + arg1Name);
+	}
+	auto iterArg2 = m_types.find(arg2Name);
+	if (iterArg2 == m_types.end())
+	{
+		throw runtime_error("There is no identifier with the name: " + arg2Name);
+	}
+
+	m_functions.emplace(name, CFunction(arg1Name, operation, arg2Name));
+	m_types[name] = IdentifierType::Func;
+}
+
+optional<double> CCalculator::GetValue(const std::string &name)
+{
+	if (GetType(name) == IdentifierType::Var)
+	{
+		auto iter = m_variables.find(name);
+		return iter->second.GetValue();
 	}
 	else
 	{
-		cout << value.value() << endl;
+		auto iter = m_functions.find(name);
+		return GetFuncValue(iter->second);
 	}
 }
 
-void PrintVariables()
+CCalculator::Values CCalculator::GetVariablesValues() const
 {
-	CStorage::Values values = CStorage::GetVariablesValues();
-	for (const auto value : values)
+	Values values;
+	for (const auto &variable : m_variables)
 	{
-		cout << value.first << ':';
-		if (!value.second)
-		{
-			cout << "nan\n";
-		}
-		else
-		{
-			cout << value.second.value() << endl;
-		}
+		values[variable.first] = variable.second.GetValue();
 	}
+	return values;
 }
 
-void PrintFunctions()
+CCalculator::Values CCalculator::GetFunctionsValues()
 {
-	CStorage::Values values = CStorage::GetFunctionsValues();
-	for (const auto value : values)
+	Values values;
+	for (auto &function : m_functions)
 	{
-		cout << value.first << ':';
-		if (!value.second)
-		{
-			cout << "nan\n";
-		}
-		else
-		{
-			cout << value.second.value() << endl;
-		}
+		values[function.first] = GetFuncValue(function.second);
 	}
+	return values;
 }
 
-int main()
+CCalculator::IdentifierType CCalculator::GetType(const string &name) const
 {
-	string inStr, command;
-	while (getline(cin, inStr))
+	auto iter = m_types.find(name);
+	if (iter == m_types.end())
 	{
-		istringstream inStrm(inStr);
-		inStrm >> command;
-		if (command == "var")
-		{
-			try 
-			{
-				SaveUndefinedVar(inStrm);
-			}
-			catch (const string &err)
-			{
-				cout << err << endl;
-			}
-		}
-		else if (command == "let")
-		{
-			try
-			{
-				SaveDefinedVar(inStrm);
-			}
-			catch (const string &err)
-			{
-				cout << err << endl;
-			}
-		}
-		else if (command == "fn")
-		{
-			try
-			{
-				SaveFunc(inStrm);
-			}
-			catch (const string &err)
-			{
-				cout << err << endl;
-			}
-		}
-		else if (command == "print")
-		{
-			try
-			{
-				PrintValue(inStrm);
-			}
-			catch (const string &err)
-			{
-				cout << err << endl;
-			}
-		}
-		else if (command == "printvars")
-		{
-			PrintVariables();
-		}
-		else if (command == "printfns")
-		{
-			PrintFunctions();
-		}
-		else if (command == "exit")
-		{
-			break;
-		}
-		else
-		{
-			cout << "Invalid input string" << endl;
-		}
+		throw runtime_error("There is no identifier with the name: " + name);
+	}
+	return iter->second;
+}
+
+optional<double> CCalculator::GetFuncValue(CFunction &func)
+{
+	if (func.ValueHasCalculated())
+	{
+		return func.GetValue();
 	}
 
-	return 0;
+	optional<double> arg1, arg2;
+	if (func.GetOperation() == CFunction::Operation::No)
+	{
+		arg1 = GetValue(func.GetArg1Name());
+		func.SetValue(arg1);
+		return arg1;
+	}
+	else
+	{
+		arg1 = GetValue(func.GetArg1Name());
+		arg2 = GetValue(func.GetArg2Name());
+		if (!arg1 || !arg2)
+		{
+			func.SetValue(nullopt);
+			return nullopt;
+		}
+
+		switch (func.GetOperation())
+		{
+		case CFunction::Operation::Add:
+			func.SetValue(arg1.value() + arg2.value());
+			return arg1.value() + arg2.value();
+
+		case CFunction::Operation::Sub:
+			func.SetValue(arg1.value() - arg2.value());
+			return arg1.value() - arg2.value();
+
+		case CFunction::Operation::Mul:
+			func.SetValue(arg1.value() * arg2.value());
+			return arg1.value() * arg2.value();
+
+		case CFunction::Operation::Div:
+			if (arg2.value() == 0)
+			{
+				throw runtime_error("Division by zero occurs");
+			}
+			func.SetValue(arg1.value() / arg2.value());
+			return arg1.value() / arg2.value();
+
+		default:
+			return nullopt;
+		}
+	}
 }
