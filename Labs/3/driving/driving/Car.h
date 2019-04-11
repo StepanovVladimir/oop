@@ -5,19 +5,6 @@
 class CCar
 {
 public:
-	CCar();
-
-	void TurnOnEngine();
-	bool TurnOffEngine();
-	void SetGear(int gear);
-	bool SetSpeed(int speed);
-
-	std::string GetEngineCondition() const;
-	std::string GetDirOfMove() const;
-	int GetGear() const;
-	int GetSpeed() const;
-
-private:
 	enum struct DirOfMove
 	{
 		Forward,
@@ -25,6 +12,19 @@ private:
 		Stop
 	};
 
+	CCar();
+
+	void TurnOnEngine();
+	bool TurnOffEngine();
+	void SetGear(int gear);
+	bool SetSpeed(int speed);
+
+	bool EngineIsOn() const;
+	DirOfMove GetDirOfMove() const;
+	int GetGear() const;
+	int GetSpeed() const;
+
+private:
 	bool m_engineIsOn;
 	DirOfMove m_dirOfMove;
 	int m_gear;
