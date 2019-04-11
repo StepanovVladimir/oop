@@ -56,7 +56,7 @@ void CCar::SetGear(int gear)
 			}
 			if (m_speed != 0)
 			{
-				throw string("You cannot set reverse gear because the speed is not zero.");
+				throw string("You cannot set reverse gear because the speed is not zero.\n");
 			}
 		}
 		m_gear = gear;
@@ -117,7 +117,7 @@ bool CCar::SetSpeed(int speed)
 		return TrySetSpeed(speed, 0, 20, DirOfMove::Back);
 
 	case 0:
-		return TrySetSpeed(speed, 0, 0, DirOfMove::Stop);
+		return TrySetSpeed(speed, 0, m_speed, m_dirOfMove);
 
 	case 1:
 		return TrySetSpeed(speed, 0, 30, DirOfMove::Forward);
@@ -139,31 +139,14 @@ bool CCar::SetSpeed(int speed)
 	}
 }
 
-string CCar::GetEngineCondition() const
+bool CCar::EngineIsOn() const
 {
-	if (m_engineIsOn)
-	{
-		return "On";
-	}
-	else
-	{
-		return "Off";
-	}
+	return m_engineIsOn;
 }
 
-string CCar::GetDirOfMove() const
+CCar::DirOfMove CCar::GetDirOfMove() const
 {
-	switch (m_dirOfMove)
-	{
-	case DirOfMove::Forward:
-		return "Forward";
-
-	case DirOfMove::Back:
-		return "Back";
-
-	default:
-		return "Stop";
-	}
+	return m_dirOfMove;
 }
 
 int CCar::GetGear() const
