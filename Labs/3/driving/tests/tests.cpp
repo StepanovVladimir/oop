@@ -8,8 +8,8 @@ TEST_CASE("Car constructor and getters tests")
 {
 	CCar car;
 
-	CHECK(car.GetEngineCondition() == "Off");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == false);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 }
@@ -20,8 +20,8 @@ TEST_CASE("TurnOnEngine tests")
 
 	car.TurnOnEngine();
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 }
@@ -29,7 +29,7 @@ TEST_CASE("TurnOnEngine tests")
 TEST_CASE("SetGear and SetSpeed when the engine is off tests")
 {
 	CCar car;
-	
+
 	try
 	{
 		car.SetGear(0);
@@ -38,6 +38,15 @@ TEST_CASE("SetGear and SetSpeed when the engine is off tests")
 	catch (const string &)
 	{
 		CHECK(false);
+	}
+	try
+	{
+		car.SetGear(-1);
+		CHECK(false);
+	}
+	catch (const string &)
+	{
+		CHECK(true);
 	}
 	try
 	{
@@ -51,8 +60,8 @@ TEST_CASE("SetGear and SetSpeed when the engine is off tests")
 
 	CHECK(car.SetSpeed(0));
 
-	CHECK(car.GetEngineCondition() == "Off");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == false);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 }
@@ -64,8 +73,8 @@ TEST_CASE("SetGear and SetSpeed on reverse gear tests")
 
 	CHECK(!car.SetSpeed(10));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 
@@ -81,8 +90,8 @@ TEST_CASE("SetGear and SetSpeed on reverse gear tests")
 
 	CHECK(!car.SetSpeed(21));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == -1);
 	CHECK(car.GetSpeed() == 0);
 
@@ -116,8 +125,8 @@ TEST_CASE("SetGear and SetSpeed on reverse gear tests")
 		CHECK(true);
 	}
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Back");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Back);
 	CHECK(car.GetGear() == -1);
 	CHECK(car.GetSpeed() == 20);
 
@@ -149,17 +158,17 @@ TEST_CASE("SetGear and SetSpeed on reverse gear tests")
 		CHECK(true);
 	}
 
-	CHECK(!car.SetSpeed(10));
+	CHECK(car.SetSpeed(10));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Back");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Back);
 	CHECK(car.GetGear() == 0);
-	CHECK(car.GetSpeed() == 20);
+	CHECK(car.GetSpeed() == 10);
 
 	CHECK(car.SetSpeed(0));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 }
@@ -181,15 +190,15 @@ TEST_CASE("SetGear and SetSpeed on first gear tests")
 
 	CHECK(!car.SetSpeed(31));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 0);
 
 	CHECK(car.SetSpeed(30));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 30);
 }
@@ -199,7 +208,7 @@ TEST_CASE("SetGear and SetSpeed on second gear tests")
 	CCar car;
 	car.TurnOnEngine();
 	car.SetGear(1);
-    car.SetSpeed(19);
+	car.SetSpeed(19);
 
 	try
 	{
@@ -211,8 +220,8 @@ TEST_CASE("SetGear and SetSpeed on second gear tests")
 		CHECK(true);
 	}
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 19);
 
@@ -230,15 +239,15 @@ TEST_CASE("SetGear and SetSpeed on second gear tests")
 
 	CHECK(!car.SetSpeed(51));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 2);
 	CHECK(car.GetSpeed() == 20);
 
 	CHECK(car.SetSpeed(50));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 2);
 	CHECK(car.GetSpeed() == 50);
 }
@@ -260,8 +269,8 @@ TEST_CASE("SetGear and SetSpeed on third gear tests")
 		CHECK(true);
 	}
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 29);
 
@@ -279,15 +288,15 @@ TEST_CASE("SetGear and SetSpeed on third gear tests")
 
 	CHECK(!car.SetSpeed(61));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 3);
 	CHECK(car.GetSpeed() == 30);
 
 	CHECK(car.SetSpeed(60));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 3);
 	CHECK(car.GetSpeed() == 60);
 }
@@ -311,8 +320,8 @@ TEST_CASE("SetGear and SetSpeed on fourth gear tests")
 		CHECK(true);
 	}
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 2);
 	CHECK(car.GetSpeed() == 39);
 
@@ -330,15 +339,15 @@ TEST_CASE("SetGear and SetSpeed on fourth gear tests")
 
 	CHECK(!car.SetSpeed(91));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 4);
 	CHECK(car.GetSpeed() == 40);
 
 	CHECK(car.SetSpeed(90));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 4);
 	CHECK(car.GetSpeed() == 90);
 }
@@ -362,8 +371,8 @@ TEST_CASE("SetGear and SetSpeed on fifth gear tests")
 		CHECK(true);
 	}
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 2);
 	CHECK(car.GetSpeed() == 49);
 
@@ -381,15 +390,15 @@ TEST_CASE("SetGear and SetSpeed on fifth gear tests")
 
 	CHECK(!car.SetSpeed(151));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 5);
 	CHECK(car.GetSpeed() == 50);
 
 	CHECK(car.SetSpeed(150));
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 5);
 	CHECK(car.GetSpeed() == 150);
 }
@@ -400,8 +409,8 @@ TEST_CASE("TurnOffEngine tests")
 
 	CHECK(car.TurnOffEngine());
 
-	CHECK(car.GetEngineCondition() == "Off");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == false);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 
@@ -411,8 +420,8 @@ TEST_CASE("TurnOffEngine tests")
 
 	CHECK(!car.TurnOffEngine());
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 0);
 
@@ -420,8 +429,8 @@ TEST_CASE("TurnOffEngine tests")
 
 	CHECK(!car.TurnOffEngine());
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 1);
 	CHECK(car.GetSpeed() == 10);
 
@@ -429,8 +438,8 @@ TEST_CASE("TurnOffEngine tests")
 
 	CHECK(!car.TurnOffEngine());
 
-	CHECK(car.GetEngineCondition() == "On");
-	CHECK(car.GetDirOfMove() == "Forward");
+	CHECK(car.EngineIsOn() == true);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Forward);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 10);
 
@@ -438,8 +447,8 @@ TEST_CASE("TurnOffEngine tests")
 
 	CHECK(car.TurnOffEngine());
 
-	CHECK(car.GetEngineCondition() == "Off");
-	CHECK(car.GetDirOfMove() == "Stop");
+	CHECK(car.EngineIsOn() == false);
+	CHECK(car.GetDirOfMove() == CCar::DirOfMove::Stop);
 	CHECK(car.GetGear() == 0);
 	CHECK(car.GetSpeed() == 0);
 }

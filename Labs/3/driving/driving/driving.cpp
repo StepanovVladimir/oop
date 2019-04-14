@@ -6,8 +6,32 @@ using namespace std;
 
 void PrintInfo(const CCar &car)
 {
-	cout << "Engine: " << car.GetEngineCondition() << endl;
-	cout << "Direction of move: " << car.GetDirOfMove() << endl;
+	cout << "Engine: ";
+	if (car.EngineIsOn())
+	{
+		cout << "On\n";
+	}
+	else
+	{
+		cout << "Off\n";
+	}
+
+	cout << "Direction of move: ";
+	switch (car.GetDirOfMove())
+	{
+	case CCar::DirOfMove::Forward:
+		cout << "Forward\n";
+		break;
+
+	case CCar::DirOfMove::Back:
+		cout << "Back\n";
+		break;
+
+	default:
+		cout << "Stop\n";
+		break;
+	}
+
 	cout << "Speed: " << car.GetSpeed() << endl;
 	cout << "Gear: " << car.GetGear() << endl;
 }
