@@ -129,4 +129,5 @@ int main()
 			cout << "Unexpected command.\n";
 		}
 	}
+	return 0;
 }

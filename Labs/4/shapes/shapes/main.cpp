@@ -176,4 +176,5 @@ int main()
 	vector<unique_ptr<IShape>> shapes = CreateShapes();
 	PrintShapeWhithLargestArea(shapes);
 	PrintShapeWhithSmallestPerimeter(shapes);
+	return 0;
 }
