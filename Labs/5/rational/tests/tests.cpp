@@ -187,85 +187,85 @@ TEST_CASE("Operator '/=' tests")
 TEST_CASE("Operator '==' tests")
 {
 	CHECK(CRational(1, 2) == CRational(1, 2));
-	CHECK(!(CRational(1, 2) == CRational(2, 3)));
+	CHECK_FALSE(CRational(1, 2) == CRational(2, 3));
 
 	CHECK(CRational(4, 1) == 4);
-	CHECK(!(CRational(1, 2) == 7));
+	CHECK_FALSE(CRational(1, 2) == 7);
 	
 	CHECK(3 == CRational(3, 1));
-	CHECK(!(3 == CRational(2, 3)));
+	CHECK_FALSE(3 == CRational(2, 3));
 }
 
 TEST_CASE("Operators '!=' tests")
 {
-	CHECK(!(CRational(1, 2) != CRational(1, 2)));
-	CHECK(!(CRational(1, 2) == CRational(2, 3)));
+	CHECK(CRational(1, 2) != CRational(2, 3));
+	CHECK_FALSE(CRational(1, 2) != CRational(1, 2));
 
-	CHECK(CRational(4, 1) == 4);
-	CHECK(!(CRational(1, 2) == 7));
+	CHECK(CRational(1, 2) != 7);
+	CHECK_FALSE(CRational(4, 1) != 4);
 
-	CHECK(3 == CRational(3, 1));
-	CHECK(!(3 == CRational(2, 3)));
+	CHECK(3 != CRational(2, 3));
+	CHECK_FALSE(3 != CRational(3, 1));
 }
 
 TEST_CASE("Operator '<' tests")
 {
 	CHECK(CRational(1, 3) < CRational(1, 2));
-	CHECK(!(CRational(1, 2) < CRational(1, 2)));
-	CHECK(!(CRational(1, 2) < CRational(1, 3)));
+	CHECK_FALSE(CRational(1, 2) < CRational(1, 2));
+	CHECK_FALSE(CRational(1, 2) < CRational(1, 3));
 
 	CHECK(CRational(1, 2) < 7);
-	CHECK(!(CRational(2, 1) < 2));
-	CHECK(!(CRational(2, 1) < 1));
+	CHECK_FALSE(CRational(2, 1) < 2);
+	CHECK_FALSE(CRational(2, 1) < 1);
 
 	CHECK(2 < CRational(3, 1));
-	CHECK(!(3 < CRational(3, 1)));
-	CHECK(!(4 < CRational(3, 1)));
+	CHECK_FALSE(3 < CRational(3, 1));
+	CHECK_FALSE(4 < CRational(3, 1));
 }
 
 TEST_CASE("Operator '<=' tests")
 {
 	CHECK(CRational(1, 3) <= CRational(1, 2));
 	CHECK(CRational(1, 2) <= CRational(1, 2));
-	CHECK(!(CRational(1, 2) <= CRational(1, 3)));
+	CHECK_FALSE(CRational(1, 2) <= CRational(1, 3));
 
 	CHECK(CRational(1, 2) <= 7);
 	CHECK(CRational(2, 1) <= 2);
-	CHECK(!(CRational(2, 1) <= 1));
+	CHECK_FALSE(CRational(2, 1) <= 1);
 
 	CHECK(2 <= CRational(3, 1));
 	CHECK(3 <= CRational(3, 1));
-	CHECK(!(4 <= CRational(3, 1)));
+	CHECK_FALSE(4 <= CRational(3, 1));
 }
 
 TEST_CASE("Operator '>' tests")
 {
 	CHECK(CRational(1, 2) > CRational(1, 3));
-	CHECK(!(CRational(1, 2) > CRational(1, 2)));
-	CHECK(!(CRational(1, 3) > CRational(1, 2)));
+	CHECK_FALSE(CRational(1, 2) > CRational(1, 2));
+	CHECK_FALSE(CRational(1, 3) > CRational(1, 2));
 
 	CHECK(CRational(3, 1) > 2);
-	CHECK(!(CRational(3, 1) > 3));
-	CHECK(!(CRational(3, 1) > 4));
+	CHECK_FALSE(CRational(3, 1) > 3);
+	CHECK_FALSE(CRational(3, 1) > 4);
 
 	CHECK(7 > CRational(1, 2));
-	CHECK(!(2 > CRational(2, 1)));
-	CHECK(!(1 > CRational(2, 1)));
+	CHECK_FALSE(2 > CRational(2, 1));
+	CHECK_FALSE(1 > CRational(2, 1));
 }
 
 TEST_CASE("Operator '>=' tests")
 {
 	CHECK(CRational(1, 2) >= CRational(1, 3));
 	CHECK(CRational(1, 2) >= CRational(1, 2));
-	CHECK(!(CRational(1, 3) >= CRational(1, 2)));
+	CHECK_FALSE(CRational(1, 3) >= CRational(1, 2));
 
 	CHECK(CRational(3, 1) >= 2);
 	CHECK(CRational(3, 1) >= 3);
-	CHECK(!(CRational(3, 1) >= 4));
+	CHECK_FALSE(CRational(3, 1) >= 4);
 
 	CHECK(7 >= CRational(1, 2));
 	CHECK(2 >= CRational(2, 1));
-	CHECK(!(1 >= CRational(2, 1)));
+	CHECK_FALSE(1 >= CRational(2, 1));
 }
 
 TEST_CASE("Operator '<<' tests")

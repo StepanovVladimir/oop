@@ -4,18 +4,6 @@
 
 using namespace std;
 
-CRational::CRational()
-	: m_numerator(0)
-	, m_denominator(1)
-{
-}
-
-CRational::CRational(int value)
-	: m_numerator(value)
-	, m_denominator(1)
-{
-}
-
 CRational::CRational(int numerator, int denominator)
 {
 	if (denominator == 0)
@@ -25,7 +13,7 @@ CRational::CRational(int numerator, int denominator)
 	int GCD = GetGCD(numerator, denominator);
 	numerator /= GCD;
 	denominator /= GCD;
-	if (numerator >= 0 && denominator >= 0 || numerator <= 0 || denominator >= 0)
+	if (numerator >= 0 && denominator >= 0 || numerator <= 0 && denominator >= 0)
 	{
 		m_numerator = numerator;
 		m_denominator = denominator;
@@ -177,29 +165,17 @@ istream &operator>>(istream &inStrm, CRational &rational)
 
 int CRational::GetGCD(int i1, int i2)
 {
-	if (abs(i1) < abs(i2))
+	i1 = abs(i1);
+	i2 = abs(i2);
+	while (i1 != 0)
 	{
-		GetGCD(i2, i1);
+		i2 %= i1;
+		swap(i1, i2);
 	}
-
-	if (i2 == 0)
-	{
-		return i1;
-	}
-	else
-	{
-		return GetGCD(i2, i1 % i2);
-	}
+	return i2;
 }
 
 int CRational::GetLCM(int i1, int i2)
 {
-	for (int i = max(i1, i2); ; i++)
-	{
-		if (i % i1 == 0 && i % i2 == 0)
-		{
-			return i;
-		}
-	}
-	return 0;
+	return i1 * i2 / GetGCD(i1, i2);
 }
