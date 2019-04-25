@@ -115,19 +115,28 @@ CMyString &CMyString::operator+=(const CMyString &other)
 {
 	CMyString tmp(*this);
 	delete[] m_pChars;
-	if (this != &other)
+	try
 	{
-		m_length += other.GetLength();
-		m_pChars = new char[m_length + 1];
-		memcpy(m_pChars, tmp.GetStringData(), tmp.GetLength());
-		memcpy(&m_pChars[tmp.GetLength()], other.GetStringData(), other.GetLength() + 1);
+		if (this != &other)
+		{
+			m_length += other.GetLength();
+			m_pChars = new char[m_length + 1];
+			memcpy(m_pChars, tmp.GetStringData(), tmp.GetLength());
+			memcpy(&m_pChars[tmp.GetLength()], other.GetStringData(), other.GetLength() + 1);
+		}
+		else
+		{
+			m_length *= 2;
+			m_pChars = new char[m_length + 1];
+			memcpy(m_pChars, tmp.GetStringData(), tmp.GetLength());
+			memcpy(&m_pChars[tmp.GetLength()], tmp.GetStringData(), tmp.GetLength() + 1);
+		}
 	}
-	else
+	catch (const bad_alloc &)
 	{
-		m_length *= 2;
-		m_pChars = new char[m_length + 1];
-		memcpy(m_pChars, tmp.GetStringData(), tmp.GetLength());
-		memcpy(&m_pChars[tmp.GetLength()], tmp.GetStringData(), tmp.GetLength() + 1);
+		swap(m_pChars, tmp.m_pChars);
+		swap(m_length, tmp.m_length);
+		throw;
 	}
 	return *this;
 }
