@@ -10,5 +10,5 @@ struct Sportsman
 	unsigned weight;
 };
 
-bool LessByHeight(Sportsman i1, Sportsman i2);
-bool LessByWeight(Sportsman i1, Sportsman i2);
+bool LessByHeight(const Sportsman &sportsman1, const Sportsman &sportsman2);
+bool LessByWeight(const Sportsman &sportsman1, const Sportsman &sportsman2);

@@ -10,7 +10,13 @@ bool FindMax(const std::vector<T> &arr, T &maxValue, const Less &less)
 	{
 		return false;
 	}
-	auto iter = std::max_element(arr.cbegin(), arr.cend(), less);
-	maxValue = *iter;
+	maxValue = arr[0];
+	for (size_t i = 1; i < arr.size(); i++)
+	{
+		if (less(maxValue, arr[i]))
+		{
+			maxValue = arr[i];
+		}
+	}
 	return true;
 }
