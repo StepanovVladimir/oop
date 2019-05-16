@@ -3,10 +3,9 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <string>
+#include <float.h>
 
 using namespace std;
-
-double EPS = 0.00000001;
 
 double GetCubeRoot(double d)
 {
@@ -75,7 +74,7 @@ EquationRoots3 Solve3(double a, double b, double c, double d)
 	double r = (2 * pow(b, 3) - 9 * b * c + 27 * d) / 54;
 	double s = pow(q, 3) - pow(r, 2);
 
-	if (abs(s) < EPS)
+	if (abs(s) < DBL_EPSILON)
 	{
 		return GetTwoEquationRoots(b, r);
 	}
